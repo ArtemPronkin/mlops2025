@@ -1,13 +1,17 @@
 import os
 import pickle
+
 import pandas as pd
 import yaml
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+
+FEATURE_COLUMNS = ["total_bill", "size"]
+TARGET_COLUMN = "high_tip"
 
 
 def load_params():
-    with open("params.yaml", "r") as f:
+    with open("params.yaml", "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
@@ -16,10 +20,10 @@ def train_model():
 
     df = pd.read_csv("data/processed/dataset.csv")
 
-    X = df[["total_bill", "size"]]
-    y = df["high_tip"]
+    X = df[FEATURE_COLUMNS]
+    y = df[TARGET_COLUMN]
 
-    X_train, X_test, y_train, y_test = train_test_split(
+    X_train, _, y_train, _ = train_test_split(
         X, y, test_size=params["test_size"], random_state=params["seed"]
     )
 
