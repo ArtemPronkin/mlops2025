@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "step3-rag-homework"
+version = "0.1.0"
+description = "Homework for lesson 6 step 3"
+authors = ["student"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "*"
+pillow = "*"
+scikit-learn = "*"
+openai = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
