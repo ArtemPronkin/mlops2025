@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "lesson2-step4-homework"
+version = "0.1.0"
+description = "DVC and Great Expectations homework with model validation"
+authors = ["MLOps Student <student@example.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+dvc = "~3.50"
+great-expectations = "~0.18"
+ipywidgets = "<8"
+notebook = "<7"
+pandas = "~2.2"
+pathspec = "<1.0"
+pyyaml = "~6.0"
+scikit-learn = "~1.5"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.10.0"
+isort = "^5.13.2"
+pre-commit = "^4.0.1"
+ruff = "^0.8.0"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]

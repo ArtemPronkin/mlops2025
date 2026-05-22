@@ -1,48 +1,23 @@
 import os
 import sys
+
 import pandas as pd
-import great_expectations as gx
 from great_expectations.dataset import PandasDataset
 
 
 def validate_data():
-    # Читаем данные
     df = pd.read_csv("data/raw/tips.csv")
-
-    # Создаем GX DataSet
     ge_df = PandasDataset(df)
 
-    # Создаем expectations
     ge_df.expect_column_values_to_not_be_null("total_bill")
     ge_df.expect_column_values_to_not_be_null("tip")
     ge_df.expect_column_values_to_not_be_null("size")
     ge_df.expect_column_values_to_be_between("total_bill", min_value=0, max_value=100)
     ge_df.expect_column_values_to_be_between("size", min_value=1, max_value=10)
 
-    # Получаем expectation suite
-    expectation_suite = ge_df.get_expectation_suite()
-    expectation_suite.expectation_suite_name = "tips_validation_suite"
-
-    # Создаем context и добавляем suite
-    try:
-        context = gx.get_context()
-    except Exception:
-        # Инициализируем GX в текущей директории
-        context = gx.data_context.FileDataContext.create(".")
-
-    # Добавляем или обновляем suite
-    try:
-        context.save_expectation_suite(expectation_suite)
-    except Exception:
-        context.add_expectation_suite(expectation_suite)
-
-    # Валидируем данные
     validation_results = ge_df.validate()
-
-    # Создаем директории для отчетов
     os.makedirs("reports/validation", exist_ok=True)
 
-    # Генерируем простой HTML отчет с результатами валидации
     success_rate = (
         validation_results.statistics["successful_expectations"]
         / validation_results.statistics["evaluated_expectations"]
@@ -79,7 +54,7 @@ def validate_data():
 
     for result in validation_results.results:
         status = "success" if result.success else "failed"
-        status_icon = "✅" if result.success else "❌"
+        status_icon = "PASS" if result.success else "FAIL"
         expectation_type = result.expectation_config.expectation_type
         column = result.expectation_config.kwargs.get("column", "")
 
@@ -93,7 +68,7 @@ def validate_data():
     html_content += """
     <div style="margin-top: 40px; padding: 20px; background: #e3f2fd; border-radius: 8px;">
         <h3>Dataset Summary</h3>
-        <p><strong>Shape:</strong> {rows} rows × {cols} columns</p>
+        <p><strong>Shape:</strong> {rows} rows x {cols} columns</p>
         <p><strong>Generated:</strong> {timestamp}</p>
     </div>
 </body>
@@ -103,13 +78,11 @@ def validate_data():
         timestamp=pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S"),
     )
 
-    # Сохраняем HTML отчет
     with open("reports/validation/index.html", "w", encoding="utf-8") as f:
         f.write(html_content)
 
     print("Validation report generated at: reports/validation/index.html")
 
-    # Проверяем результат валидации
     if not validation_results.success:
         print("Data validation failed!")
         sys.exit(1)

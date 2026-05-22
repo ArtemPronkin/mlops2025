@@ -39,3 +39,15 @@ stages:
       - models/model.pkl
       - data/processed/dataset.csv
       - params.yaml
+    metrics:
+      - metrics/metrics.json:
+          cache: false
+
+  validate_model:
+    cmd: python src/validate_model.py
+    deps:
+      - src/validate_model.py
+      - models/model.pkl
+      - data/processed/dataset.csv
+      - metrics/metrics.json
+      - params.yaml
